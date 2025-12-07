@@ -7,7 +7,6 @@
 
 postgresql['enable'] = false
 gitlab_rails['db_adapter'] = 'postgresql'
-gitlab_rails['db_database'] = 'postgres'
 gitlab_rails['db_encoding'] = 'unicode'
 gitlab_rails['db_host'] = '<host>'
 gitlab_rails['db_port'] = 5432
@@ -45,3 +44,4 @@ gitlab_rails['backup_upload_connection'] = {
 gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-<user>';
 
 external_url "http://<ec2-ip>"
+
