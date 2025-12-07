@@ -44,6 +44,3 @@ gitlab_rails['backup_upload_connection'] = {
 gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-<user>';
 
 external_url "http://<ec2-ip>"
-
-
-
