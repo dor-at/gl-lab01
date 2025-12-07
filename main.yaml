@@ -255,23 +255,23 @@ Resources:
                 Action: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject', 's3:AbortMultipartUpload', 's3:ListBucketMultipartUploads']
                 Resource:
                 - !GetAtt ArtifactsBucket.Arn
-                - !Sub '${ArtifactsBucket.Arn}/*'
+                - !Join ['', [!GetAtt ArtifactsBucket.Arn, '/*']]
                 - !GetAtt ExternalDiffsBucket.Arn
-                - !Sub '${ExternalDiffsBucket.Arn}/*'
+                - !Join ['', [!GetAtt ExternalDiffsBucket.Arn, '/*']]
                 - !GetAtt LfsBucket.Arn
-                - !Sub '${LfsBucket.Arn}/*'
+                - !Join ['', [!GetAtt LfsBucket.Arn, '/*']]
                 - !GetAtt UploadsBucket.Arn
-                - !Sub '${UploadsBucket.Arn}/*'
+                - !Join ['', [!GetAtt UploadsBucket.Arn, '/*']]
                 - !GetAtt PackagesBucket.Arn
-                - !Sub '${PackagesBucket.Arn}/*'
+                - !Join ['', [!GetAtt PackagesBucket.Arn, '/*']]
                 - !GetAtt DependencyProxyBucket.Arn
-                - !Sub '${DependencyProxyBucket.Arn}/*'
+                - !Join ['', [!GetAtt DependencyProxyBucket.Arn, '/*']]
                 - !GetAtt TerraformBucket.Arn
-                - !Sub '${TerraformBucket.Arn}/*'
+                - !Join ['', [!GetAtt TerraformBucket.Arn, '/*']]
                 - !GetAtt CiSecureFilesBucket.Arn
-                - !Sub '${CiSecureFilesBucket.Arn}/*'
+                - !Join ['', [!GetAtt CiSecureFilesBucket.Arn, '/*']]
                 - !GetAtt BackupsBucket.Arn
-                - !Sub '${BackupsBucket.Arn}/*'
+                - !Join ['', [!GetAtt BackupsBucket.Arn, '/*']]
   GitlabInstanceProfile: 
     Type: AWS::IAM::InstanceProfile
     Properties: 
@@ -299,6 +299,7 @@ Outputs:
     Value: !Ref AuthTokenSecretId
   
     
+
 
 
 
