@@ -3,6 +3,7 @@
 # - host
 # - password
 # - user
+# - ec2-ip
 
 postgresql['enable'] = false
 gitlab_rails['db_adapter'] = 'postgresql'
@@ -44,5 +45,6 @@ gitlab_rails['backup_upload_connection'] = {
 gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-dor';
 
 external_url "http://<ec2-ip>"
+
 
 
