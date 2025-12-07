@@ -1,6 +1,5 @@
-
 # This config provides gitlab access to AWS resources (RDS, S3, ElastiCache)
-# Fill- HOST, PORT, PASSWORD, USERNAME (for each bucket) as needed
+# Fill- host, password, user
 
 postgresql['enable'] = false
 gitlab_rails['db_adapter'] = 'postgresql'
@@ -42,3 +41,4 @@ gitlab_rails['backup_upload_connection'] = {
 gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-dor';
 
 external_url "http://<ec2-ip>"
+
