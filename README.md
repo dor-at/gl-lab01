@@ -7,7 +7,7 @@ Infrastructure configuration for a K1 gitlab cluster (-1000 users)
 ```
 **Package CloudFormation template**
 ```bash
-  aws cloudformation package --template-file buckettemplate.yaml --s3-bucket <bucket-name> --output-template-file packaged-template.yaml
+  aws cloudformation package --template-file main.yaml --s3-bucket <bucket-name> --output-template-file packaged-template.yaml
 ```
 **Deploy CloudFormation stack**
 ```bash
