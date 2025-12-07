@@ -11,5 +11,7 @@ aws cloudformation package --template-file main.yaml --s3-bucket <bucket-name> -
 ```
 **Deploy CloudFormation stack**
 ```bash
-aws cloudformation create-stack --stack-name gl-lab01 --template-body file://packaged-template.yaml --parameters AuthTokenField=<key-name>,AuthTokenSecretId=<secret-arn>,BucketsUsername=<username>,RdsSecretField=<key-name>,RdsSecretId=<secret-arn>,VpcId=<default-vpc>,VpcSubnet<subnet-id>
+aws cloudformation create-stack --stack-name gl-lab01 --template-body file://packaged-template.yaml --parameters ParamaterKey=AuthTokenField,ParameterValue=<key-name> ParameterKey=AuthTokenId,ParameterValue=<secret-arn> ParameterKey=BucketsUsername,ParameterValue=<username>
+ParameterKey=RdsSecretField,ParameterValue=<key-name> ParameterKey=RdsSecretId,ParameterValue=<secret-arn>
+ParameterKey=VpcId,ParameterValue=<default-vpc> ParameterKey=SubnetId,ParameterValue=<subnet-id>
 ```
