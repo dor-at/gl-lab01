@@ -1,5 +1,8 @@
-# This config provides gitlab access to AWS resources (RDS, S3, ElastiCache)
-# Fill- host, password, user
+# This config provides gitlab access to AWS resources
+# Fill using CloudFormation outputs
+# - host
+# - password
+# - user
 
 postgresql['enable'] = false
 gitlab_rails['db_adapter'] = 'postgresql'
@@ -13,7 +16,7 @@ postgresql['auto_restart_on_version_change'] = false
 redis['enable'] = false
 gitlab_rails['redis_host'] = '<host>'
 gitlab_rails['redis_port'] = '6379'
-gitlab_rails['redis_password'] = '<token>'
+gitlab_rails['redis_password'] = '<password>'
 gitlab_rails['redis_ssl'] = false
 
 gitlab_rails['object_store']['enabled'] = true
@@ -41,4 +44,5 @@ gitlab_rails['backup_upload_connection'] = {
 gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-dor';
 
 external_url "http://<ec2-ip>"
+
 
