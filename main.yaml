@@ -28,9 +28,6 @@ Parameters:
   # S3
   BucketsUsername:
     Type: String
-  TemplateUrl:
-    Type: String
-    Default: buckettemplate.yaml
   # EC2 
   AmiId:
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
@@ -148,7 +145,7 @@ Resources:
   ArtifactsBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-artifacts
         BucketUsername:
@@ -156,7 +153,7 @@ Resources:
   ExternalDiffsBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-external-diffs
         BucketUsername:
@@ -164,7 +161,7 @@ Resources:
   LfsBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-lfs
         BucketUsername:
@@ -172,7 +169,7 @@ Resources:
   UploadsBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-uploads
         BucketUsername:
@@ -180,7 +177,7 @@ Resources:
   PackagesBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-packages
         BucketUsername:
@@ -188,7 +185,7 @@ Resources:
   DependencyProxyBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-dependency-proxy
         BucketUsername:
@@ -196,7 +193,7 @@ Resources:
   TerraformBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-terraform
         BucketUsername:
@@ -204,7 +201,7 @@ Resources:
   CiSecureFilesBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-ci-secure-files
         BucketUsername:
@@ -212,7 +209,7 @@ Resources:
   BackupsBucket:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: !Ref TemplateUrl
+      TemplateURL: buckettemplate.yaml
       Parameters:
         BucketName: gl-backups
         BucketUsername:
@@ -284,3 +281,4 @@ Outputs:
     Value: !Ref AuthTokenSecretId
   
     
+
