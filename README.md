@@ -1,7 +1,7 @@
 # gl-lab01
 Infrastructure configuration for a K1 gitlab cluster (-1000 users)
 ## Prerequisites
-- Secrets manager secrets of type 'secret-string'
+- Secrets Manager secrets of type 'secret-string'
   - RDS master user password
   - Redis auth token
 
