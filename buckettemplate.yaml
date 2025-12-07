@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  BucketUsername:
+    Type: String
+  BucketName:
+    Type: String
+Conditions:
+  EnableVersioning: !Equals
+  - !Ref BucketName
+  - gl-terraform  
+  RetainSevenDays: !Equals
+  - !Ref BucketName
+  - gl-backups 
+  TransitionStorage: !Or 
+  - !Equals [!Ref BucketName, gl-artifacts]
+  - !Equals [!Ref BucketName, gl-uploads]
+  - !Equals [!Ref BucketName, gl-packages]
+  - !Equals [!Ref BucketName, gl-lfs]
+Resources:
+  S3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Join
+      - '-'
+      - - !Ref BucketName
+        - !Ref BucketUsername
+      # Security
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      OwnershipControls:
+        Rules:
+          - ObjectOwnership: BucketOwnerEnforced
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      # Lifecycle
+      VersioningConfiguration: # Special case for terraform bucket
+        Status: !If [EnableVersioning, Enabled, Suspended]
+      LifecycleConfiguration:
+        Rules:
+        - Id: AbortMPU
+          Status: Enabled
+          AbortIncompleteMultipartUpload:
+            DaysAfterInitiation: 7
+        - Id: TranisitonIA # Special case for artifact buckets
+          Status: !If [TransitionStorage, Enabled, Disabled]
+          ExpirationInDays: 365
+          Transitions:
+          - TransitionInDays: 30
+            StorageClass: STANDARD_IA
+        - Id: RetainBackupsDuration # Special case for backups bucket
+          Status: !If [RetainSevenDays, Enabled, Disabled]
+          ExpirationInDays: 7
+Outputs:
+  BucketName:
+    Value: !Ref S3Bucket
+    Export:
+      !Sub "${AWS::StackName}-${BucketName}-name"

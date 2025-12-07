@@ -1,0 +1,286 @@
+# Description: This CloudFormaition template aims to deploy required infrastructure to run a K1 gitlab cluster (-1000 Users)
+# Name: Dor Attar 
+# Date: 4/12/2025
+AWSTemplateFormatVersion: 2010-09-09
+Parameters:
+  # RDS
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+  RdsSecretId:
+    Type: String
+  RdsSecretField:
+    Description: The json key name of the secret, e.g 'password'
+    Type: String
+  DBName:
+    Type: String
+    Default: postgres
+  DBUsermame:
+    Type: String
+    Default: postgres
+  # Cache
+  VpcSubnet:
+    Type: AWS::EC2::Subnet::Id
+  AuthTokenSecretId:
+    Type: String
+  AuthTokenSecretField:
+    Type: String
+    Description: The json key name of the secret, e.g 'password'
+  # S3
+  BucketsUsername:
+    Type: String
+  TemplateUrl:
+    Type: String
+    Default: buckettemplate.yaml
+  # EC2 
+  AmiId:
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-ebs
+Resources:
+  # RDS
+  AppSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Securiy group for the app resources
+      GroupName: gl-lab01-gitlab-app-sg
+      SecurityGroupIngress: 
+      - IpProtocol: tcp
+        FromPort: 22
+        ToPort: 22
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 80
+        ToPort: 80
+        CidrIp: 0.0.0.0/0
+      - IpProtocol: tcp
+        FromPort: 443
+        ToPort: 443
+        CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+      VpcId: !Ref VpcId
+  RdsSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Securiy group for the DB resources
+      GroupName: gl-lab01-rds-pg-sg
+      SecurityGroupIngress: 
+      - IpProtocol: tcp
+        FromPort: 5432
+        ToPort: 5432
+        SourceSecurityGroupId: !Ref AppSg
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+      VpcId: !Ref VpcId
+  ElasticCacheSg:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Securiy group for the ElasticCache resources
+      GroupName: gl-lab01-elasticache-redis-sg
+      SecurityGroupIngress: 
+      - IpProtocol: tcp
+        FromPort: 6379
+        ToPort: 6379
+        SourceSecurityGroupId: !Ref AppSg
+      SecurityGroupEgress:
+      - IpProtocol: -1
+        CidrIp: 0.0.0.0/0
+      VpcId: !Ref VpcId
+  Rds:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      # Engine
+      Engine: postgres
+      DBInstanceIdentifier: gl-lab01-db-instance
+      # EngineVersion: # TODO: Verify no specification means latest
+      # Deploy
+      MultiAZ: false
+      DBInstanceClass: db.m5d.large # 2 vCPU / 8 GB
+      # Storage
+      AllocatedStorage: '100'
+      StorageType: gp3
+      # Connectivity
+      Port: 5432
+      VPCSecurityGroups:
+      - !Ref RdsSg
+      PubliclyAccessible: false
+      # Credentials
+      MasterUsername: postgres
+      MasterUserPassword: !Sub "{{resolve:secretsmanager:${RdsSecretId}:SecretString:${RdsSecretField}}}"
+      # Encryption
+      StorageEncrypted: false
+      # Deletion
+      DeletionProtection: false
+  # Cache
+  ElasticCacheSubnetGroup:
+    Type: 'AWS::ElastiCache::SubnetGroup'
+    Properties:
+      Description: Cache Subnet Group
+      SubnetIds:
+      - !Ref VpcSubnet
+         
+  ElasticCache:
+    Type: AWS::ElastiCache::ReplicationGroup
+    Properties:
+      # Engine
+      Engine: redis
+      EngineVersion: '7.1'
+      AutoMinorVersionUpgrade: true
+      ReplicationGroupDescription: ElasticCache replication group for a k1 gitlab cluster
+      # Deploy
+      ClusterMode: disabled
+      NumNodeGroups: '1'
+      MultiAZEnabled: false
+      AutomaticFailoverEnabled: false
+      # Instance Class
+      CacheNodeType: cache.t3.small
+      # Networking
+      SecurityGroupIds:
+      - !Ref ElasticCacheSg
+      Port: 6379
+      CacheSubnetGroupName: !Ref ElasticCacheSubnetGroup
+      # Auth
+      AuthToken: !Sub "{{resolve:secretsmanager:${AuthTokenSecretId}:SecretString:${AuthTokenSecretField}}}"
+      AtRestEncryptionEnabled: true
+      TransitEncryptionEnabled: true
+  # S3
+  ArtifactsBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-artifacts
+        BucketUsername:
+          Ref: BucketsUsername
+  ExternalDiffsBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-external-diffs
+        BucketUsername:
+          Ref: BucketsUsername
+  LfsBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-lfs
+        BucketUsername:
+          Ref: BucketsUsername
+  UploadsBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-uploads
+        BucketUsername:
+          Ref: BucketsUsername
+  PackagesBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-packages
+        BucketUsername:
+          Ref: BucketsUsername
+  DependencyProxyBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-dependency-proxy
+        BucketUsername:
+          Ref: BucketsUsername
+  TerraformBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-terraform
+        BucketUsername:
+          Ref: BucketsUsername
+  CiSecureFilesBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-ci-secure-files
+        BucketUsername:
+          Ref: BucketsUsername
+  BackupsBucket:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: !Ref TemplateUrl
+      Parameters:
+        BucketName: gl-backups
+        BucketUsername:
+          Ref: BucketsUsername
+  # EC2
+  SshKey:
+    Type: 'AWS::EC2::KeyPair'
+    Properties:
+      KeyName: GitlabKeyPair
+  GitlabVm:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: !Ref AmiId
+      InstanceType: t3.medium
+      IamInstanceProfile: !Ref GitlabInstanceProfile
+      BlockDeviceMappings:
+        - DeviceName: /dev/xvda
+          Ebs:
+            VolumeType: gp3
+            VolumeSize: 100
+      SecurityGroupIds:
+      - !Ref AppSg
+      KeyName: !Ref SshKey
+  GitlabIAMRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: GitlabVmPolicy
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject', 's3:AbortMultipartUpload', 's3:ListBucketMultipartUploads']
+                Resource: '*' # FIXME(dor): Security risk- Include specific bucket names
+  GitlabInstanceProfile: 
+    Type: AWS::IAM::InstanceProfile
+    Properties: 
+      Roles: 
+      - !Ref GitlabIAMRole
+Outputs:
+  # RDS
+  DBEndpoint:
+    Value: !GetAtt Rds.Endpoint.Address
+  DBPort:
+    Value: !GetAtt Rds.Endpoint.Port
+  DBName:
+    Value: !Ref DBName
+  DBUsername:
+    Value: !Ref DBUsermame
+  DBPassword:
+    Value: !Ref RdsSecretId
+  # Cache
+  PrimaryEndpoint:
+    Value: !Join
+    - ':'
+    - - !GetAtt ElasticCache.PrimaryEndPoint.Address
+      - !GetAtt ElasticCache.PrimaryEndPoint.Port
+  AuthToken:
+    Value: !Ref AuthTokenSecretId
+  
+    
