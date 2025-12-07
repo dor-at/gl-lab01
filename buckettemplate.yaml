@@ -58,5 +58,3 @@ Resources:
 Outputs:
   BucketName:
     Value: !Ref S3Bucket
-    Export:
-      !Sub "${AWS::StackName}-${BucketName}-name"
