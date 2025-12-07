@@ -254,24 +254,24 @@ Resources:
               - Effect: Allow
                 Action: ['s3:ListBucket', 's3:GetObject', 's3:PutObject', 's3:DeleteObject', 's3:AbortMultipartUpload', 's3:ListBucketMultipartUploads']
                 Resource:
-                - !GetAtt ArtifactsBucket.Arn
-                - !Sub '${ArtifactsBucket.Arn}/*'
-                - !GetAtt ExternalDiffsBucket.Arn
-                - !Sub '${ExternalDiffsBucket.Arn}/*'
-                - !GetAtt LfsBucket.Arn
-                - !Sub '${LfsBucket.Arn}/*'
-                - !GetAtt UploadsBucket.Arn
-                - !Sub '${UploadsBucket.Arn}/*'
-                - !GetAtt PackagesBucket.Arn
-                - !Sub '${PackagesBucket.Arn}/*'
-                - !GetAtt DependencyProxyBucket.Arn
-                - !Sub '${DependencyProxyBucket.Arn}/*'
-                - !GetAtt TerraformBucket.Arn
-                - !Sub '${TerraformBucket.Arn}/*'
-                - !GetAtt CiSecureFilesBucket.Arn
-                - !Sub '${CiSecureFilesBucket.Arn}/*'
-                - !GetAtt BackupsBucket.Arn
-                - !Sub '${BackupsBucket.Arn}/*'
+                - !GetAtt ArtifactsBucket.Outputs.Arn
+                - !Sub '${ArtifactsBucket.Outputs.Arn}/*'
+                - !GetAtt ExternalDiffsBucket.Outputs.Arn
+                - !Sub '${ExternalDiffsBucket.Outputs.Arn}/*'
+                - !GetAtt LfsBucket.Outputs.Arn
+                - !Sub '${LfsBucket.Outputs.Arn}/*'
+                - !GetAtt UploadsBucket.Outputs.Arn
+                - !Sub '${UploadsBucket.Outputs.Arn}/*'
+                - !GetAtt PackagesBucket.Outputs.Arn
+                - !Sub '${PackagesBucket.Outputs.Arn}/*'
+                - !GetAtt DependencyProxyBucket.Outputs.Arn
+                - !Sub '${DependencyProxyBucket.Outputs.Arn}/*'
+                - !GetAtt TerraformBucket.Outputs.Arn
+                - !Sub '${TerraformBucket.Outputs.Arn}/*'
+                - !GetAtt CiSecureFilesBucket.Outputs.Arn
+                - !Sub '${CiSecureFilesBucket.Outputs.Arn}/*'
+                - !GetAtt BackupsBucket.Outputs.Arn
+                - !Sub '${BackupsBucket.Outputs.Arn}/*'
   GitlabInstanceProfile: 
     Type: AWS::IAM::InstanceProfile
     Properties: 
@@ -299,6 +299,7 @@ Outputs:
     Value: !Ref AuthTokenSecretId
   
     
+
 
 
 
