@@ -42,9 +42,10 @@ gitlab_rails['backup_upload_connection'] = {
 'use_iam_profile' => true,
 'aws_signature_version' => 4
 }
-gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-dor';
+gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-<user>';
 
 external_url "http://<ec2-ip>"
+
 
 
 
