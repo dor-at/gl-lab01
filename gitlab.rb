@@ -17,7 +17,7 @@ redis['enable'] = false
 gitlab_rails['redis_host'] = '<host>'
 gitlab_rails['redis_port'] = '6379'
 gitlab_rails['redis_password'] = '<password>'
-gitlab_rails['redis_ssl'] = false
+gitlab_rails['redis_ssl'] = true
 
 gitlab_rails['object_store']['enabled'] = true
 gitlab_rails['object_store']['connection'] = {
@@ -44,5 +44,6 @@ gitlab_rails['backup_upload_connection'] = {
 gitlab_rails['backup_upload_remote_directory'] = 'gl-backups-<user>';
 
 external_url "http://<ec2-ip>"
+
 
 
