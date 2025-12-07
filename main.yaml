@@ -1,6 +1,6 @@
 # Description: This CloudFormaition template aims to deploy required infrastructure to run a K1 gitlab cluster (-1000 Users)
 # Name: Dor Attar 
-# Date: 4/12/2025
+# Date: 7/12/2025
 AWSTemplateFormatVersion: 2010-09-09
 Parameters:
   # RDS
@@ -299,5 +299,6 @@ Outputs:
     Value: !Ref AuthTokenSecretId
   
     
+
 
 
