@@ -1,5 +1,10 @@
 # gl-lab01
 Infrastructure configuration for a K1 gitlab cluster (-1000 users)
+## Prerequisites
+-itemSecrets manager secrets of type 'secret-string'\n
+-itemRDS password
+-itemRedis token
+Specify the key names and arns in the following sections
 ## How to use
 **Clone the repo**
 ```bash
