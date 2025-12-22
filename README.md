@@ -1,5 +1,5 @@
 # gl-lab01
-Infrastructure configuration for a K1 gitlab cluster (-1000 users)
+Infrastructure configuration for a cloud-native gitlab instance
 ## Prerequisites
 - Secrets Manager secrets of type 'secret-string'
   - RDS master user password
